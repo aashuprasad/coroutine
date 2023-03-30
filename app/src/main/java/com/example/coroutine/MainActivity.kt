@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,25 +16,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            task1()
-        }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            task2()
+        CoroutineScope(Dispatchers.Unconfined).launch {
+            execute()
         }
     }
 
-    suspend fun task1() {
-        Log.d(TAG, "STARTING TASK 1")
-        delay(3000)
-        Log.d(TAG, "ENDING TASK 1")
-    }
+    private suspend fun execute(){
+        val parentJob = GlobalScope.launch(Dispatchers.Main){
 
-    suspend fun task2() {
-        Log.d(TAG, "STARTING TASK 2")
-        delay(2500)
-        Log.d(TAG, "ENDING TASK 2")
-    }
+            Log.d(TAG, "Parent Started")
 
+            val childJob = launch(Dispatchers.IO){
+                try{
+                Log.d(TAG, "Child job started")
+                delay(3000)
+                Log.d(TAG, "Child job ended")
+                } catch (e: CancellationException){
+                    Log.d(TAG, "Child job cancelled")
+                }
+            }
+            delay(2000)
+            childJob.cancel()
+            Log.d(TAG, "Parent ended")
+        }
+        /*delay(1000)
+        parentJob.cancel()*/
+        parentJob.join()
+        Log.d(TAG, "Parent completed")
+    }
 }
