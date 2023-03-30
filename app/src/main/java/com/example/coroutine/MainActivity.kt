@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import kotlinx.coroutines.DefaultExecutor.thread
-import kotlin.concurrent.thread
-
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
     private val TAG:String = "KOTLIN_DEBUG"
@@ -34,8 +32,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun doAction(view: View) {
+        /*//disadvantage - limited os level threads available and difficult context switching
         thread(start = true) {
             executeLongRunningTask()
+        }
+*/
+        //Logcat filter - "package:mine level:debug tag:KOTLIN_DEBUG"
+        CoroutineScope(Dispatchers.IO).launch{
+            Log.d(TAG, "1- ${Thread.currentThread().name}")
+        }
+
+        GlobalScope.launch(Dispatchers.Main) {
+            Log.d(TAG, "2- ${Thread.currentThread().name}")
+        }
+
+        MainScope().launch(Dispatchers.Default){
+            Log.d(TAG, "3- ${Thread.currentThread().name}")
         }
     }
 
