@@ -1,48 +1,27 @@
 package com.example.coroutine
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.*
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
-    private val TAG: String = "KOTLIN_DEBUG"
-    lateinit var counterText: TextView
-
-
+    lateinit var viewModel:MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        CoroutineScope(Dispatchers.Unconfined).launch {
-            execute()
-        }
-    }
-
-    private suspend fun execute(){
-        val parentJob = GlobalScope.launch(Dispatchers.Main){
-
-            Log.d(TAG, "Parent Started")
-
-            val childJob = launch(Dispatchers.IO){
-                try{
-                Log.d(TAG, "Child job started")
-                delay(3000)
-                Log.d(TAG, "Child job ended")
-                } catch (e: CancellationException){
-                    Log.d(TAG, "Child job cancelled")
-                }
-            }
+        lifecycleScope.launch {
             delay(2000)
-            childJob.cancel()
-            Log.d(TAG, "Parent ended")
+            val intent = Intent(this@MainActivity, AnotherActivity::class.java)
+            startActivity(intent)
+            finish()
         }
-        /*delay(1000)
-        parentJob.cancel()*/
-        parentJob.join()
-        Log.d(TAG, "Parent completed")
     }
 }
