@@ -21,3 +21,5 @@ lifecycleScope, viewModelScope, GlobalScope - These are predefined CoroutineScop
 coroutineScope, supervisorScope - these are coroutine builders used to create a new coroutine scope.
   #coroutineScope creates a new scope with a Job and CoroutineContext
 	#supervisorScope creates a scope that is independent of its parent scope, allowing for more flexible error handling.
+Documentation- 
+https://docs.google.com/spreadsheets/d/1hNARjlzjC3RlTjOZ5tOFhxPOrUccd4tToGOrxhqHmhI/edit?usp=sharing
